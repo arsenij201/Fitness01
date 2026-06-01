@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FitnessFlow - Твой фитнес тренер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4f8 0%, #e2e8f0 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .phone-app {
+            max-width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f4f8 0%, #e2e8f0 100%);
+            position: relative;
+            padding-bottom: 70px;
+        }
+
+        .app-content {
+            padding: 20px 16px;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .card:active {
+            transform: scale(0.99);
+        }
+
+        button, .btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            padding: 14px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            width: 100%;
+        }
+
+        button:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            width: 0%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s ease-out;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px 12px;
+            border-radius: 30px;
+        }
+
+        .nav-item.active {
+            color: #8b5cf6;
+            background: #f3e8ff;
+        }
+
+        .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .workout-card {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        .workout-card:active {
+            transform: scale(0.98);
+            background: #f8fafc;
+        }
+
+        .tag {
+            background: #f1f5f9;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+            font-size: 16px;
+            margin-top: 12px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .heartbeat {
+            background: #fee2e2;
+            border-radius: 50px;
+            padding: 10px 16px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .status-bar {
+            background: transparent;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2c3e;
+        }
+
+        .home-indicator {
+            width: 130px;
+            height: 5px;
+            background: #cbd5e1;
+            border-radius: 100px;
+            margin: 8px auto 0;
+        }
+
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-nav {
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+            .phone-app {
+                padding-bottom: calc(70px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        let currentPage = 'splash';
+        
+        let userData = {
+            workoutPercent: 80,
+            calories: 645,
+            steps: 999,
+            stepsGoal: 2000,
+            water: 6,
+            waterGoal: 8,
+            workouts: {
+                pushups: 40,
+                knee_pushups: 20,
+                squats: 1
+            }
+        };
+
+        function addProgress(workoutName) {
+            if (workoutName === 'pushups' && userData.workouts.pushups < 100) {
+                userData.workouts.pushups = Math.min(100, userData.workouts.pushups + 10);
+                showToast('+10 отжиманий! 💪');
+            } else if (workoutName === 'squats' && userData.workouts.squats < 20) {
+                userData.workouts.squats = Math.min(20, userData.workouts.squats + 5);
+                showToast('+5 приседаний! 🦵');
+            }
+            render();
+        }
+
+        function showToast(message) {
+            let toast = document.createElement('div');
+            toast.innerHTML = message;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '100px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = '#1a2c3e';
+            toast.style.color = 'white';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '40px';
+            toast.style.fontSize = '14px';
+            toast.style.zIndex = '3000';
+            toast.style.animation = 'fadeInUp 0.3s ease-out';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (currentPage === 'splash') {
+                app.innerHTML = `
+                    <div class="splash-screen">
+                        <div style="text-align: center; animation: pulse 2s infinite;">
+                            <div style="font-size: 80px; margin-bottom: 20px;">💪</div>
+                            <h1 style="color: white; font-size: 32px; margin-bottom: 12px;">Добро пожаловать!</h1>
+                            <p style="color: rgba(255,255,255,0.95); font-size: 18px; margin-bottom: 30px;">Здоровье — это самое главное</p>
+                            <div style="width: 250px; margin: 0 auto;">
+                                <div class="progress-bar" style="background: rgba(255,255,255,0.3);">
+                                    <div class="progress-fill" style="width: 100%; background: white;"></div>
+                                </div>
+                            </div>
+                            <p style="color: rgba(255,255,255,0.8); margin-top: 30px; font-size: 13px;">Вьетнамские традиции фитнеса</p>
+                        </div>
+                    </div>
+                `;
+                setTimeout(() => { 
+                    currentPage = 'home'; 
+                    render(); 
+                }, 2000);
+            } 
+            else {
+                app.innerHTML = `
+                    <div class="phone-app">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋 100%</span>
+                        </div>
+                        <div class="app-content">
+                            ${currentPage === 'home' ? renderHome() : ''}
+                            ${currentPage === 'explore' ? renderExplore() : ''}
+                            ${currentPage === 'workout' ? renderWorkout() : ''}
+                            ${currentPage === 'report' ? renderReport() : ''}
+                        </div>
+                        ${renderBottomNav()}
+                        <div class="home-indicator"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderHome() {
+            return `
+                <div class="fade-in">
+                    <div class="card" style="text-align: center;">
+                        <h1>Доброе утро 🎉</h1>
+                        <input type="text" placeholder="Поиск" id="searchInput" onkeypress="if(event.key==='Enter') alert('Поиск: ' + this.value)">
+                    </div>
+
+                    <div class="card">
+                        <h2>Популярные тренировки</h2>
+                        <div class="workout-card" onclick="currentPage='workout'; render();">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>🏋️ Тренировка нижней части тела</strong>
+                                <span class="tag">⭐ 4.9</span>
+                            </div>
+                            <div style="margin-top: 8px; color: #64748b;">500 назад • 50 мин</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📋 План на сегодня</h3>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Отжимания 100 в день</strong>
+                                <span style="color: #6366f1;">${userData.workouts.pushups}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${userData.workouts.pushups}%;"></div>
+                            </div>
+                            <button class="btn-small" onclick="event.stopPropagation(); addProgress('pushups')" style="margin-top: 8px;">+10 отжиманий</button>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Отжимания на коленях 20 sit up a day</strong>
+                                <span style="color: #6366f1;">${userData.workouts.knee_pushups}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${userData.workouts.knee_pushups}%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Присед 20 в день</strong>
+                                <span style="color: #6366f1;">${userData.workouts.squats}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${userData.workouts.squats}%;"></div>
+                            </div>
+                            <button class="btn-small" onclick="event.stopPropagation(); addProgress('squats')" style="margin-top: 8px;">+5 приседаний</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; gap: 30px; justify-content: center;">
+                            <div style="text-align: center;">
+                                <span style="font-size: 40px;">🏋️</span>
+                                <div style="font-size: 14px; margin-top: 6px; font-weight: 500;">Рука Тренировка</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 40px;">🦵</span>
+                                <div style="font-size: 14px; margin-top: 6px; font-weight: 500;">Присед</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderExplore() {
+            return `
+                <div class="fade-in">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h1>🏆 Лучшая тренировка</h1>
+                            <button class="btn-small" style="width: auto; background: transparent; color: #6366f1; box-shadow: none; padding: 8px 12px;" onclick="alert('Все лучшие тренировки')">Посмотреть больше →</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔥 Лучшее для тебя</h3>
+                        <div class="workout-card" onclick="alert('Сжигатель жира на животе - 10 мин')">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Сжигатель жира на животе</strong>
+                                    <div style="font-size: 13px; color: #64748b;">10 мин • Ножев</div>
+                                </div>
+                                <span class="tag">🔥</span>
+                            </div>
+                        </div>
+                        <div class="workout-card" onclick="alert('Планка - 5 мин эксперт')">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Планка</strong>
+                                    <div style="font-size: 13px; color: #64748b;">5 мин • Эксперт</div>
+                                </div>
+                                <span class="tag">⭐</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🧩 Испытания</h3>
+                        <div class="workout-card" onclick="alert('Испытание Планка')">
+                            <span style="font-size: 20px; margin-right: 12px;">🏆</span>
+                            <strong>Планка-испытание</strong>
+                        </div>
+                        <div class="workout-card" onclick="alert('Спирт вызов')">
+                            <span style="font-size: 20px; margin-right: 12px;">🍷</span>
+                            <strong>Спирт-вызов</strong>
+                        </div>
+                        <div class="workout-card" onclick="alert('Приседание вызов')">
+                            <span style="font-size: 20px; margin-right: 12px;">🦵</span>
+                            <strong>Приседание вызов</strong>
+                        </div>
+                        <div class="workout-card" onclick="alert('Разминка для ног')">
+                            <span style="font-size: 20px; margin-right: 12px;">🏃</span>
+                            <strong>Быстрая тренировка: Ноги разминка</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderWorkout() {
+            return `
+                <div class="fade-in">
+                    <div class="card">
+                        <h1>💪 Тренировка нижней части тела</h1>
+                        <div style="display: flex; gap: 30px; margin: 16px 0; padding: 12px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+                            <div><span style="color: #8b5cf6; font-size: 20px;">⏱️</span><br><strong>20 мин</strong></div>
+                            <div><span style="color: #f59e0b; font-size: 20px;">🔥</span><br><strong>95 ккал</strong></div>
+                        </div>
+                        <p style="line-height: 1.5; color: #475569; font-size: 14px;">Нижняя часть живота и бедра — самые сложные зоны для похудения во время диеты. Тем не менее, в этой области, особенно в ногах в целом, можно сбросить вес, даже не используя никаких приспособлений.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>📋 Этапы</h3>
+                        <div class="workout-card" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>1. Прыжки</strong>
+                                <div style="font-size: 13px; color: #64748b;">00:30</div>
+                            </div>
+                            <button class="btn-small" style="width: auto; padding: 8px 20px;" onclick="alert('Прыжки начались! 🦘')">▶</button>
+                        </div>
+                        <div class="workout-card" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>2. Приседания</strong>
+                                <div style="font-size: 13px; color: #64748b;">01:00</div>
+                            </div>
+                            <button class="btn-small" style="width: auto; padding: 8px 20px;" onclick="alert('Приседания! 🦵')">▶</button>
+                        </div>
+                        <div class="workout-card" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>3. Выпад назад</strong>
+                                <div style="font-size: 13px; color: #64748b;">00:30</div>
+                            </div>
+                            <button class="btn-small" style="width: auto; padding: 8px 20px;" onclick="alert('Выпады назад! 🏃')">▶</button>
+                        </div>
+                        <button onclick="alert('Тренировка началась! Удачи 💪')" style="margin-top: 12px;">🚀 Начать тренировку</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReport() {
+            return `
+                <div class="fade-in">
+                    <div class="card">
+                        <h1>📊 Сегодняшний отчет</h1>
+                        
+                        <div style="margin: 16px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Время тренировки</strong>
+                                <span style="color: #22c55e;">${userData.workoutPercent}%</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${userData.workoutPercent}%;"></div></div>
+                        </div>
+                        
+                        <div style="margin: 16px 0;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>Активные калории</strong>
+                                <span style="color: #f59e0b; font-size: 20px; font-weight: 700;">${userData.calories} ккал</span>
+                            </div>
+                        </div>
+                        
+                        <div class="heartbeat">
+                            <strong>Ритмика сердца:</strong><br>
+                            🎵-🎵-🎵-🎵-🎵-🎵-🎵-🎵-
+                        </div>
+                        
+                        <div style="margin: 16px 0;">
+                            <div style="margin-bottom: 6px;"><strong>Сон</strong></div>
+                            <div style="font-family: monospace; font-size: 12px;">🎵-🎵-🎵-🎵-🎵-🎶-🎵-🎵-🎵-🎵-🎵-🎵-🎶-🎵</div>
+                        </div>
+                        
+                        <div style="margin: 16px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Шаги</strong>
+                                <span>${userData.steps}/${userData.stepsGoal}</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${(userData.steps/userData.stepsGoal)*100}%;"></div></div>
+                        </div>
+                        
+                        <div style="margin: 16px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <strong>Вода</strong>
+                                <span>${userData.water}/${userData.waterGoal} стаканов</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${(userData.water/userData.waterGoal)*100}%;"></div></div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; background: linear-gradient(135deg, #e6f7e6, #d4f7d4); padding: 20px; border-radius: 28px; text-align: center;">
+                            <span style="font-size: 40px;">🎉</span>
+                            <h3 style="margin-top: 6px;">Так держать!</h3>
+                            <p style="margin-top: 4px; font-size: 14px;">Продолжай в том же духе 🏃‍♂️</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBottomNav() {
+            return `
+                <div class="bottom-nav">
+                    <div class="nav-item ${currentPage === 'home' ? 'active' : ''}" onclick="currentPage='home'; render();">
+                        <span class="icon">🏠</span>
+                        <span>Главная</span>
+                    </div>
+                    <div class="nav-item ${currentPage === 'explore' ? 'active' : ''}" onclick="currentPage='explore'; render();">
+                        <span class="icon">🔍</span>
+                        <span>Исследовать</span>
+                    </div>
+                    <div class="nav-item ${currentPage === 'workout' ? 'active' : ''}" onclick="currentPage='workout'; render();">
+                        <span class="icon">💪</span>
+                        <span>Тренировка</span>
+                    </div>
+                    <div class="nav-item ${currentPage === 'report' ? 'active' : ''}" onclick="currentPage='report'; render();">
+                        <span class="icon">📈</span>
+                        <span>Аналитика</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        render();
+    </script>
+</body>
+</html>
